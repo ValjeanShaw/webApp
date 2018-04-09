@@ -8,6 +8,10 @@
          http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
        default-lazy-init="true">
 
+    <context:component-scan base-package="com.lucky"/>
+    <context:annotation-config/>
+
+    <import resource="applicationContext-jdbc.xml"/>
 
 
 

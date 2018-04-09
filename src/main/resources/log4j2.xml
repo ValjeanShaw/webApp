@@ -24,7 +24,6 @@
             </Policies>
         </RollingFile>
     </appenders>
-    #root 默认加载
     <loggers>
         <root level="info">
             <appender-ref ref="RollingFile"/>
