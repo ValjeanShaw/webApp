@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- 配置sqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 加载Mybatis全局配置文件 -->
+        <property name="configLocation" value="classpath:sqlMapConfig.xml"/>
+        <property name="mapperLocations" value="classpath:mybatis/*.xml"/>
+    </bean>
+
+    <!--下面两种方法，一种是自动是扫描对应的service类，一种是通过注入sqlsessionFactory的方式来获取一个SqlsessionTemplate-->
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 扫描包路径，如果需要扫描多个包，中间使用半角逗号隔开 -->
+        <property name="basePackage" value="com.lucky.mapper"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+
+    </bean>
+    <!-- 配置SqlSessionTemplate -->
+    <!--  通过构造函数注入
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+    -->
+
+</beans>
