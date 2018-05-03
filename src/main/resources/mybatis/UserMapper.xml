@@ -9,4 +9,8 @@
         FROM user
         WHERE id=#{id}
     </select>
+
+    <insert id=""></insert>
+
+
 </mapper>
