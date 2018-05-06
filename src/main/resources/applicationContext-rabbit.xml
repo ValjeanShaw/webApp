@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+
+    <!--配置连接-->
+    <rabbit:connection-factory id="connectionFactory"
+                               host="${rabbitmq.host}"
+                               port="${rabbitmq.port}"
+                               username="${rabbitmq.username}"
+                               password="${rabbitmq.password}"/>
+
+    <!--通过指定admin信息，当前producer中的exchange和queue会在rabbitmq服务器上自动生成。 -->
+    <rabbit:admin connection-factory="connectionFactory"/>
+
+    <!-- 声明使用的exchange定义，在这个规则上绑定了适用其方法的队列 -->
+    <!--
+    rabbit:direct-exchange：定义exchange模式为direct，意思就是消息与一个特定的路由键完全匹配，才会转发。
+    rabbit:binding：设置消息queue匹配的key
+    -->
+    <rabbit:direct-exchange name="webTestMessExchange">
+        <rabbit:bindings>
+            <!-- 之前声明的队列 -->
+            <rabbit:binding queue="test_queue" key="test_queue_key"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!-- 声明一个Queue -->
+    <!--
+    durable:是否持久化
+    exclusive: 仅创建者可以使用的私有队列，断开后自动删除
+    auto_delete: 当所有消费客户端连接断开后，是否自动删除队列
+     -->
+    <rabbit:queue id="test_queue" name="test_queue_name" durable="true" exclusive="false"
+                  auto-delete="false">
+        <rabbit:queue-arguments>
+            <entry key="x-ha-policy" value="all"/>
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+
+
+    <!-- ********************    消息发送模块    ************************-->
+    <!--模板类，理论上生产和消费放需要配置，但使用原生的消费接口则可以忽略 -->
+    <rabbit:template id="sendNoticeTemplate" connection-factory="connectionFactory"
+                     exchange="webTestMessExchange"/>
+
+
+    <!-- ********************    处理队列的模块   ************************-->
+    <!--绑定监听的类-->
+    <bean id="messageReceiver" class="com.lucky.queue.rabbitmqConsumer"/>
+
+    <!--配置监听的方法类-->
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener ref="messageReceiver" method="consumerMess"
+                         queue-names="test_queue_name"/>
+    </rabbit:listener-container>
+
+
+
+
+</beans>
