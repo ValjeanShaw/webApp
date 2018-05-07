@@ -16,18 +16,6 @@
     <!--通过指定admin信息，当前producer中的exchange和queue会在rabbitmq服务器上自动生成。 -->
     <rabbit:admin connection-factory="connectionFactory"/>
 
-    <!-- 声明使用的exchange定义，在这个规则上绑定了适用其方法的队列 -->
-    <!--
-    rabbit:direct-exchange：定义exchange模式为direct，意思就是消息与一个特定的路由键完全匹配，才会转发。
-    rabbit:binding：设置消息queue匹配的key
-    -->
-    <rabbit:direct-exchange name="webTestMessExchange">
-        <rabbit:bindings>
-            <!-- 之前声明的队列 -->
-            <rabbit:binding queue="test_queue" key="test_queue_key"/>
-        </rabbit:bindings>
-    </rabbit:direct-exchange>
-
     <!-- 声明一个Queue -->
     <!--
     durable:是否持久化
@@ -41,6 +29,17 @@
         </rabbit:queue-arguments>
     </rabbit:queue>
 
+    <!-- 声明使用的exchange定义，在这个规则上绑定了适用其方法的队列 -->
+    <!--
+    rabbit:direct-exchange：定义exchange模式为direct，意思就是消息与一个特定的路由键完全匹配，才会转发。
+    rabbit:binding：设置消息queue匹配的key
+    -->
+    <rabbit:direct-exchange name="webTestMessExchange">
+        <rabbit:bindings>
+            <!-- 之前声明的队列 -->
+            <rabbit:binding queue="test_queue" key="test_queue_key"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
 
 
     <!-- ********************    消息发送模块    ************************-->
