@@ -51,12 +51,23 @@
     <!-- ********************    处理队列的模块   ************************-->
     <!--绑定监听的类-->
     <bean id="messageReceiver" class="com.lucky.queue.rabbitmqConsumer"/>
+    <bean id="messageReceiverFanout" class="com.lucky.queue.rabbitmqConsumerFanout"/>
 
     <!--配置监听的方法类-->
     <rabbit:listener-container connection-factory="connectionFactory">
         <rabbit:listener ref="messageReceiver" method="consumerMess"
                          queue-names="test_queue_name"/>
+        <!--以下两个队列监听fanout中的消息-->
+        <rabbit:listener ref="messageReceiverFanout" method="consumerMessFanoutOne"
+                         queue-names="queueforfanoutone"/>
+        <rabbit:listener ref="messageReceiverFanout" method="consumerMessFanoutTwo"
+                         queue-names="queueforfanouttwo"/>
     </rabbit:listener-container>
+
+
+    <!--fanout转发器   发送消息模块和处理队列模块   -->
+    <rabbit:template id="sendNoticeTemPlateFanout" connection-factory="connectionFactory"
+                     exchange="fanoutExchange"/>
 
 
 
