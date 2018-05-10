@@ -45,12 +45,7 @@ public class RabbitmqConfigFactory {
     public Binding bindingQueueTwo(){
         return BindingBuilder.bind(queueForFanoutTwo()).to(fanoutExchange());
     }
-
-    @Bean
-    public RabbitTemplate rabbitTemplate333(){
-        RabbitTemplate rabbitTemplate = new RabbitTemplate();
-        return rabbitTemplate;
-    }
+    
 
 
     /***************************************************
