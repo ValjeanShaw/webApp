@@ -34,10 +34,11 @@
     rabbit:direct-exchange：定义exchange模式为direct，意思就是消息与一个特定的路由键完全匹配，才会转发。
     rabbit:binding：设置消息queue匹配的key
     -->
-    <rabbit:direct-exchange name="webTestMessExchange">
+    <rabbit:direct-exchange name="webDirectMessExchange">
         <rabbit:bindings>
             <!-- 之前声明的队列 -->
             <rabbit:binding queue="test_queue" key="test_queue_key"/>
+            <rabbit:binding queue="test_queue" key="test_queue_key2"/>
         </rabbit:bindings>
     </rabbit:direct-exchange>
 
@@ -45,13 +46,12 @@
     <!-- ********************    消息发送模块    ************************-->
     <!--模板类，理论上生产和消费放需要配置，但使用原生的消费接口则可以忽略-->
     <!--direct转发器发送消息-->
-    <rabbit:template id="sendNoticeTemplate" connection-factory="connectionFactory"
-                     exchange="webTestMessExchange"/>
-
+    <rabbit:template id="sendDirectTemplate" connection-factory="connectionFactory"
+                     exchange="webDirectMessExchange"/>
 
     <!-- ********************    处理队列的模块   ************************-->
     <!--绑定监听的类-->
-    <bean id="messageReceiver" class="com.lucky.queue.rabbitmqConsumer"/>
+    <bean id="messageReceiver" class="com.lucky.queue.rabbitmqConsumerDirect"/>
     <bean id="messageReceiverFanout" class="com.lucky.queue.rabbitmqConsumerFanout"/>
     <bean id="messageReceiverTopic" class="com.lucky.queue.rabbitmqConsumerTopic"/>
 
@@ -59,6 +59,8 @@
     <!--监听direct消息-->
     <rabbit:listener-container connection-factory="connectionFactory">
         <rabbit:listener ref="messageReceiver" method="consumerMess"
+                         queue-names="test_queue_name"/>
+        <rabbit:listener ref="messageReceiver" method="consumerMess2"
                          queue-names="test_queue_name"/>
     </rabbit:listener-container>
 

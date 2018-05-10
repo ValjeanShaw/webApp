@@ -17,8 +17,8 @@ public class QueueController {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueueController.class);
 
     @Autowired
-    @Qualifier("sendNoticeTemplate")
-    private RabbitTemplate messProducer;
+    @Qualifier("sendDirectTemplate")
+    private RabbitTemplate sendDirectTemplate;
 
     @Resource(name = "sendNoticeTemPlateFanout")
     RabbitTemplate sendNoticeTemPlateFanout;
@@ -30,7 +30,7 @@ public class QueueController {
     @RequestMapping(value = "/rabbitmq")
     @ResponseBody
     public String rabbitMq() {
-        messProducer.convertAndSend("test_queue_key", "hello rabbitmq mess");
+        sendDirectTemplate.convertAndSend("test_queue_key", "yes rabbitmq mess");
         return "rabbitmq is sent";
     }
 
