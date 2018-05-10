@@ -43,7 +43,8 @@
 
 
     <!-- ********************    消息发送模块    ************************-->
-    <!--模板类，理论上生产和消费放需要配置，但使用原生的消费接口则可以忽略 -->
+    <!--模板类，理论上生产和消费放需要配置，但使用原生的消费接口则可以忽略-->
+    <!--direct转发器发送消息-->
     <rabbit:template id="sendNoticeTemplate" connection-factory="connectionFactory"
                      exchange="webTestMessExchange"/>
 
@@ -52,11 +53,17 @@
     <!--绑定监听的类-->
     <bean id="messageReceiver" class="com.lucky.queue.rabbitmqConsumer"/>
     <bean id="messageReceiverFanout" class="com.lucky.queue.rabbitmqConsumerFanout"/>
+    <bean id="messageReceiverTopic" class="com.lucky.queue.rabbitmqConsumerTopic"/>
 
-    <!--配置监听的方法类-->
+    <!--以下几种消息可以放在一起-->
+    <!--监听direct消息-->
     <rabbit:listener-container connection-factory="connectionFactory">
         <rabbit:listener ref="messageReceiver" method="consumerMess"
                          queue-names="test_queue_name"/>
+    </rabbit:listener-container>
+
+    <!--监听fanout消息-->
+    <rabbit:listener-container connection-factory="connectionFactory">
         <!--以下两个队列监听fanout中的消息-->
         <rabbit:listener ref="messageReceiverFanout" method="consumerMessFanoutOne"
                          queue-names="queueforfanoutone"/>
@@ -64,11 +71,23 @@
                          queue-names="queueforfanouttwo"/>
     </rabbit:listener-container>
 
+    <!--监听topic消息-->
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener ref="messageReceiverTopic" method="consumerMessTopicOne"
+                         queue-names="queueOneForTopic"/>
+        <rabbit:listener ref="messageReceiverTopic" method="consumerMessTopicTwo"
+                         queue-names="queueTwoForTopic"/>
+    </rabbit:listener-container>
 
-    <!--fanout转发器   发送消息模块和处理队列模块   -->
+
+    <!--fanout转发器   发送消息模块   -->
     <rabbit:template id="sendNoticeTemPlateFanout" connection-factory="connectionFactory"
                      exchange="fanoutExchange"/>
 
+
+    <!--topic转发器    发送消息模块-->
+    <rabbit:template id="sendNoticeTemPlateTopic" connection-factory="connectionFactory"
+                     exchange="topicExchange"/>
 
 
 
