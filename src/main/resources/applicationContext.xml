@@ -15,5 +15,6 @@
     <import resource="applicationContext-mybatis.xml"/>
     <import resource="applicationContext-redis.xml"/>
     <import resource="applicationContext-rabbit.xml"/>
+    <import resource="applicationContext-kafka.xml"/>
 
 </beans>

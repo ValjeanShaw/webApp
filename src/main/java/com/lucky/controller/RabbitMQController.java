@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 
 @Controller
-@RequestMapping("/queue")
-public class QueueController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueueController.class);
+@RequestMapping("/rabbitmq")
+public class RabbitMQController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQController.class);
 
     @Autowired
     @Qualifier("sendDirectTemplate")
@@ -27,14 +27,14 @@ public class QueueController {
     RabbitTemplate sendNoticeTemPlateTopic;
 
 
-    @RequestMapping(value = "/rabbitmq")
+    @RequestMapping(value = "/sendDirect")
     @ResponseBody
     public String rabbitMq() {
         sendDirectTemplate.convertAndSend("test_queue_key", "yes rabbitmq mess");
         return "rabbitmq is sent";
     }
 
-    @RequestMapping(value = "/rabbitmqFanout")
+    @RequestMapping(value = "/snedFanout")
     @ResponseBody
     public String rabbitMqFanout() {
         sendNoticeTemPlateFanout.convertAndSend("fanoutExchange","","this is fanout mess");
@@ -42,7 +42,7 @@ public class QueueController {
     }
 
 
-    @RequestMapping(value = "/rabbitmqTopic")
+    @RequestMapping(value = "/sendTopic")
     @ResponseBody
     public String rabbitMqTopic(String channel){
         String routerKey = "";

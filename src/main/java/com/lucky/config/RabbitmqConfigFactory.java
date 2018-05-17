@@ -5,7 +5,6 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +44,7 @@ public class RabbitmqConfigFactory {
     public Binding bindingQueueTwo(){
         return BindingBuilder.bind(queueForFanoutTwo()).to(fanoutExchange());
     }
-    
+
 
 
     /***************************************************

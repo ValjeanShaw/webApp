@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:kafka="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- 创建kafkatemplate需要使用的producerfactory bean -->
+    <bean id="producerFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${kafka.bootstrap.servers}"/>
+                <entry key="group.id" value="${kafka.group.id}"/>
+                <entry key="retries" value="${kafka.retries}"/>
+                <entry key="batch.size" value="${kafka.batch.size}"/>
+                <entry key="linger.ms" value="${kafka.linger.ms}"/>
+                <entry key="buffer.memory" value="${kafka.buffer.memory}"/>
+                <entry key="auto.create.topics.enabley" value="true"/>
+                <entry key="delete.topic.enable" value="false"/>
+                <entry key="key.serializer" value="org.apache.kafka.common.serialization.IntegerSerializer"/>
+                <entry key="value.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <!-- 创建kafkatemplate bean，使用的时候，只需要注入这个bean，即可使用template的send消息方法 -->
+    <bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
+        <constructor-arg ref="producerFactory"/>
+        <constructor-arg name="autoFlush" value="true"/>
+        <property name="defaultTopic" value="myTopic"/>
+    </bean>
+
+
+    <!-- 创建consumerFactory bean -->
+    <bean id="consumerFactory" class="org.springframework.kafka.core.DefaultKafkaConsumerFactory">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${kafka.bootstrap.servers}" />
+                <entry key="group.id" value="${kafka.group.id}"/>
+                <entry key="enable.auto.commit" value="true"/>
+                <entry key="auto.commit.interval.ms" value="1000"/>
+                <entry key="session.timeout.ms" value="30000"/>
+                <entry key="key.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer" />
+                <entry key="value.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer" />
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <!-- 实际执行消息消费的类 -->
+    <bean id="messageListernerConsumerService" class="com.lucky.queue.kafkaConsumer"/>
+
+    <!-- 消费者容器配置信息 -->
+    <bean id="containerProperties" class="org.springframework.kafka.listener.config.ContainerProperties">
+        <constructor-arg value="myTopic"/>
+        <property name="messageListener" ref="messageListernerConsumerService"/>
+    </bean>
+
+    <!-- 创建kafkatemplate bean，使用的时候，只需要注入这个bean，即可使用template的send消息方法 -->
+    <bean id="messageListenerContainer" class="org.springframework.kafka.listener.KafkaMessageListenerContainer" init-method="doStart">
+        <constructor-arg ref="consumerFactory"/>
+        <constructor-arg ref="containerProperties"/>
+    </bean>
+
+</beans>
